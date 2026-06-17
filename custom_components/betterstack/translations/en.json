@@ -1,0 +1,31 @@
+{
+  "title": "Better Stack",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Only a single configuration of Better Stack is allowed."
+    },
+    "error": {
+      "bad_dsn": "Invalid Better Stack DSN",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "dsn": "Better Stack DSN"
+        },
+        "description": "Create or open a Better Stack Errors application, go to Data ingestion, and paste the Sentry-compatible DSN."
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "event_custom_components": "Send events from custom components",
+          "event_handled": "Send handled events",
+          "event_third_party_packages": "Send events from third-party packages"
+        }
+      }
+    }
+  }
+}
