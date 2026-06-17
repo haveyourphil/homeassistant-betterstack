@@ -21,10 +21,7 @@ from .const import (
     CONF_EVENT_CUSTOM_COMPONENTS,
     CONF_EVENT_HANDLED,
     CONF_EVENT_THIRD_PARTY_PACKAGES,
-    CONF_LOGGING_EVENT_LEVEL,
-    DEFAULT_LOGGING_EVENT_LEVEL,
     DOMAIN,
-    LOGGING_LEVELS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -88,12 +85,6 @@ class BetterStackOptionsFlow(OptionsFlow):
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(
-                        CONF_LOGGING_EVENT_LEVEL,
-                        default=self.config_entry.options.get(
-                            CONF_LOGGING_EVENT_LEVEL, DEFAULT_LOGGING_EVENT_LEVEL
-                        ),
-                    ): vol.In(LOGGING_LEVELS),
                     vol.Optional(
                         CONF_EVENT_HANDLED,
                         default=self.config_entry.options.get(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import logging
 import re
 from typing import Any
 
@@ -28,9 +29,7 @@ from .const import (
     CONF_EVENT_CUSTOM_COMPONENTS,
     CONF_EVENT_HANDLED,
     CONF_EVENT_THIRD_PARTY_PACKAGES,
-    CONF_LOGGING_EVENT_LEVEL,
     DEFAULT_ENVIRONMENT,
-    DEFAULT_LOGGING_EVENT_LEVEL,
     DOMAIN,
     ENTITY_COMPONENTS,
 )
@@ -44,12 +43,7 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: BetterStackConfigEntry
 ) -> bool:
     """Set up Better Stack error tracking from a config entry."""
-    sentry_logging = LoggingIntegration(
-        level=None,
-        event_level=entry.options.get(
-            CONF_LOGGING_EVENT_LEVEL, DEFAULT_LOGGING_EVENT_LEVEL
-        ),
-    )
+    sentry_logging = LoggingIntegration(level=None, event_level=logging.ERROR)
 
     channel = get_release_channel()
     huuid = await instance_id.async_get(hass)

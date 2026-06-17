@@ -18,7 +18,6 @@ Better Stack Errors accepts Sentry-compatible SDK events, so this integration us
 
 ## Options
 
-- Error event level.
 - Whether handled errors should be sent.
 - Whether errors from custom integrations should be sent.
 - Whether errors from third-party Python packages should be sent.
