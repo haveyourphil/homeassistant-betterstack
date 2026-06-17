@@ -18,7 +18,6 @@ from homeassistant.core import callback
 
 from .const import (
     CONF_DSN,
-    CONF_ENVIRONMENT,
     CONF_EVENT_CUSTOM_COMPONENTS,
     CONF_EVENT_HANDLED,
     CONF_EVENT_THIRD_PARTY_PACKAGES,
@@ -95,10 +94,6 @@ class BetterStackOptionsFlow(OptionsFlow):
                             CONF_LOGGING_EVENT_LEVEL, DEFAULT_LOGGING_EVENT_LEVEL
                         ),
                     ): vol.In(LOGGING_LEVELS),
-                    vol.Optional(
-                        CONF_ENVIRONMENT,
-                        default=self.config_entry.options.get(CONF_ENVIRONMENT),
-                    ): str,
                     vol.Optional(
                         CONF_EVENT_HANDLED,
                         default=self.config_entry.options.get(

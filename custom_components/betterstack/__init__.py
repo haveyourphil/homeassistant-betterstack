@@ -25,11 +25,11 @@ from homeassistant.setup import SetupPhases, async_pause_setup
 
 from .const import (
     CONF_DSN,
-    CONF_ENVIRONMENT,
     CONF_EVENT_CUSTOM_COMPONENTS,
     CONF_EVENT_HANDLED,
     CONF_EVENT_THIRD_PARTY_PACKAGES,
     CONF_LOGGING_EVENT_LEVEL,
+    DEFAULT_ENVIRONMENT,
     DEFAULT_LOGGING_EVENT_LEVEL,
     DOMAIN,
     ENTITY_COMPONENTS,
@@ -62,7 +62,7 @@ async def async_setup_entry(
             """Initialize the Sentry-compatible Better Stack SDK transport."""
             sentry_sdk.init(
                 dsn=entry.data[CONF_DSN],
-                environment=entry.options.get(CONF_ENVIRONMENT),
+                environment=DEFAULT_ENVIRONMENT,
                 integrations=[
                     sentry_logging,
                     AioHttpIntegration(),
