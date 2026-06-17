@@ -1,0 +1,11 @@
+{
+  "domain": "betterstack",
+  "name": "Better Stack",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://github.com/psmith/homeassistant-betterstack",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "requirements": ["sentry-sdk==2.48.0"],
+  "version": "0.1.0"
+}
