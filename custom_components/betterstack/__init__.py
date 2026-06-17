@@ -131,6 +131,8 @@ def process_before_send(
     hint: dict[str, Any],
 ) -> dict[str, Any] | None:
     """Process a Better Stack error event before sending it."""
+    normalize_logentry_title(event)
+
     if (
         "tags" in event
         and event["tags"].get("handled", "no") == "yes"
@@ -193,3 +195,30 @@ def process_before_send(
     )
 
     return event
+
+
+def normalize_logentry_title(event: dict[str, Any]) -> None:
+    """Promote formatted log events into fields Better Stack uses for titles."""
+    if "exception" in event or not isinstance(
+        logentry := event.get("logentry"), dict
+    ):
+        return
+
+    formatted_message = logentry.get("formatted")
+    if not isinstance(formatted_message, str) or not formatted_message:
+        return
+
+    template_message = logentry.get("message")
+    if (
+        isinstance(template_message, str)
+        and template_message
+        and template_message != formatted_message
+    ):
+        event.setdefault("extra", {}).setdefault(
+            "log_template", template_message
+        )
+
+    logentry["message"] = formatted_message
+    event["message"] = formatted_message
+    event["title"] = formatted_message
+    event.setdefault("transaction", formatted_message)
