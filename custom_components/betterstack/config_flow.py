@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from typing import Any
 
+import probatio
 from sentry_sdk.utils import BadDsn, Dsn
-import voluptuous as vol
 
 from homeassistant.config_entries import (
     ConfigEntry,
@@ -15,6 +14,7 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.core import callback
+from homeassistant.helpers.selector import TextSelector, TextSelectorType
 
 from .const import (
     CONF_DSN,
@@ -24,9 +24,9 @@ from .const import (
     DOMAIN,
 )
 
-_LOGGER = logging.getLogger(__name__)
-
-DATA_SCHEMA = vol.Schema({vol.Required(CONF_DSN): str})
+DATA_SCHEMA = probatio.Schema(
+    {probatio.Required(CONF_DSN): TextSelector({"type": TextSelectorType.PASSWORD})}
+)
 
 
 class BetterStackConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -46,9 +46,6 @@ class BetterStackConfigFlow(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle a user config flow."""
-        if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
-
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -56,18 +53,32 @@ class BetterStackConfigFlow(ConfigFlow, domain=DOMAIN):
                 Dsn(user_input[CONF_DSN])
             except BadDsn:
                 errors["base"] = "bad_dsn"
-            except Exception:
-                _LOGGER.exception("Unexpected exception")
-                errors["base"] = "unknown"
             else:
                 await self.async_set_unique_id(DOMAIN)
                 self._abort_if_unique_id_configured()
-                return self.async_create_entry(
-                    title="Better Stack", data=user_input
-                )
+                return self.async_create_entry(title="Better Stack", data=user_input)
 
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Replace a rotated or mistyped DSN while keeping the existing entry."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                Dsn(user_input[CONF_DSN])
+            except BadDsn:
+                errors["base"] = "bad_dsn"
+            else:
+                return self.async_update_reload_and_abort(
+                    self._get_reconfigure_entry(), data_updates=user_input
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure", data_schema=DATA_SCHEMA, errors=errors
         )
 
 
@@ -83,21 +94,21 @@ class BetterStackOptionsFlow(OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
+            data_schema=probatio.Schema(
                 {
-                    vol.Optional(
+                    probatio.Optional(
                         CONF_EVENT_HANDLED,
                         default=self.config_entry.options.get(
                             CONF_EVENT_HANDLED, False
                         ),
                     ): bool,
-                    vol.Optional(
+                    probatio.Optional(
                         CONF_EVENT_CUSTOM_COMPONENTS,
                         default=self.config_entry.options.get(
                             CONF_EVENT_CUSTOM_COMPONENTS, False
                         ),
                     ): bool,
-                    vol.Optional(
+                    probatio.Optional(
                         CONF_EVENT_THIRD_PARTY_PACKAGES,
                         default=self.config_entry.options.get(
                             CONF_EVENT_THIRD_PARTY_PACKAGES, False

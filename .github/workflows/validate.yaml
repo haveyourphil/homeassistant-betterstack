@@ -1,0 +1,61 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+  schedule:
+    - cron: "23 4 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: home-assistant/actions/hassfest@master
+
+  marketplace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+          comment: "false"
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: [baseline, latest-2]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Test the newest compatible Sentry SDK
+        if: matrix.sdk == 'latest-2'
+        run: python -m pip install --upgrade 'sentry-sdk>=2.48.0,<3.0.0'
+      - name: Check release version
+        if: github.ref_type == 'tag'
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          version = json.loads(Path("custom_components/betterstack/manifest.json").read_text())["version"]
+          assert os.environ["RELEASE_TAG"] == version, "Release tag must match manifest version exactly"
+          PY
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy --follow-imports=silent --ignore-missing-imports custom_components/betterstack
+      - run: pytest --cov=custom_components.betterstack --cov-report=term-missing

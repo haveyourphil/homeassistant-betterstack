@@ -1,0 +1,17 @@
+Home Assistant Better Stack
+
+The error tracking setup and event-processing code is adapted from the
+Home Assistant Core Sentry integration, distributed under the Apache License 2.0:
+https://github.com/home-assistant/core/tree/2026.10.4/homeassistant/components/sentry
+
+This project modifies that code for Better Stack, including config-entry
+lifecycle management, event filtering, privacy controls, and formatted titles.
+This is an independent community integration.
+
+The Better Stack logomark is from Simple Icons (CC0-1.0), rendered as PNG in
+Better Stack's brand color without changing its proportions:
+https://github.com/simple-icons/simple-icons/blob/develop/icons/betterstack.svg
+https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
+Better Stack's name and marks belong to their respective owners and are
+subject to their brand guidelines: https://betterstack.com/docs/brand/
+The Apache license for this repository does not grant trademark rights.
